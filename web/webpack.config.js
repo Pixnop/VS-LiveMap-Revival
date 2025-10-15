@@ -1,37 +1,37 @@
-const path = require('path');
-const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const TerserPlugin = require('terser-webpack-plugin');
+const path = require("path");
+const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const TerserPlugin = require("terser-webpack-plugin");
 const CopyPlugin = require("copy-webpack-plugin");
 
 module.exports = {
   devServer: {
     historyApiFallback: {
-      publicPath: '/',
+      publicPath: "/",
       rewrites: [
         {
           from: /(.*\/)?(.+)\/([+-]?\d+)\/([+-]?\d+)\/([+-]?\d+)(\/.*)?/,
-          to: ctx => ctx.match[6] ? ctx.match[6] : '/'
+          to: ctx => ctx.match[6] ? ctx.match[6] : "/"
         },
         {
           from: /./,
-          to: '/404.html'
+          to: "/404.html"
         }
       ]
     }
   },
-  devtool: 'source-map', // comment out for production
-  entry: './src/LiveMap.ts',
+  devtool: "source-map", // comment out for production
+  entry: "./src/LiveMap.ts",
   externals: {
     "leaflet": "L"
   },
-  mode: 'production',
+  mode: "production",
   module: {
     rules: [
       {
         test: /\.ts$/i,
-        use: 'ts-loader',
-        include: [path.resolve(__dirname, 'src')]
+        use: "ts-loader",
+        include: [path.resolve(__dirname, "src")]
       },
       {
         test: /\.css$/i,
@@ -43,7 +43,7 @@ module.exports = {
             }
           },
           {
-            loader: 'css-loader',
+            loader: "css-loader",
             options: {
               sourceMap: true,
               url: false
@@ -53,9 +53,9 @@ module.exports = {
       },
       {
         test: /\.svg$/,
-        loader: 'svg-sprite-loader',
+        loader: "svg-sprite-loader",
         options: {
-          symbolId: (filePath) => `icon-${path.basename(filePath, '.svg')}`
+          symbolId: (filePath) => `icon-${path.basename(filePath, ".svg")}`
         }
       }
     ]
@@ -75,16 +75,16 @@ module.exports = {
     ]
   },
   output: {
-    publicPath: '/',
-    filename: 'livemap.js',
-    path: path.resolve(__dirname, 'dist')
+    publicPath: "/",
+    filename: "livemap.js",
+    path: path.resolve(__dirname, "dist")
   },
   performance: {
     maxEntrypointSize: 1024000,
     maxAssetSize: 1024000
   },
   resolve: {
-    extensions: ['.ts', '.js', '.css']
+    extensions: [".ts", ".js", ".css"]
   },
   plugins: [
     new CopyPlugin({
@@ -98,7 +98,7 @@ module.exports = {
       ]
     }),
     new MiniCssExtractPlugin({
-      filename: 'livemap.css'
+      filename: "livemap.css"
     })
   ]
 }
