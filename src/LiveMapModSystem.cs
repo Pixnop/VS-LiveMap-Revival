@@ -1,4 +1,5 @@
-﻿using livemap.client;
+﻿using JetBrains.Annotations;
+using livemap.client;
 using livemap.common;
 using livemap.server;
 using Vintagestory.API.Client;
@@ -7,6 +8,7 @@ using Vintagestory.API.Server;
 
 namespace livemap;
 
+[UsedImplicitly]
 public sealed class LiveMapModSystem : ModSystem {
     private LiveMap? _livemap;
 

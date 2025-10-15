@@ -2,7 +2,6 @@
 
     <PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
-
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
         <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
         <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
@@ -17,47 +16,25 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Reference Include="$(VINTAGE_STORY)/**/*.dll" Private="false" />
-        <PackageReference Include="NuGet.Build.Tasks.Pack" Version="6.7.0" IncludeAssets="compile" PrivateAssets="all" />
-        <PackageReference Include="MimeTypeMapOfficial" Version="1.0.17" IncludeAssets="compile;runtime" PrivateAssets="all" />
-        <None Include="LICENSE;README.md;resources/**" CopyToOutputDirectory="PreserveNewest" Pack="true" PackagePath="" Link="%(RecursiveDir)%(Filename)%(Extension)" />
+        <Reference Include="$(VINTAGE_STORY)/**/*.dll" Private="false"/>
+        <PackageReference Include="JetBrains.Annotations" Version="2025.2.2"/>
+        <None Include="LICENSE;README.md;resources/**" CopyToOutputDirectory="PreserveNewest" Pack="true" PackagePath="" Link="%(RecursiveDir)%(Filename)%(Extension)"/>
     </ItemGroup>
 
     <Target Name="InstallAndRunNpm" AfterTargets="PostBuildEvent">
-        <Exec Command="npm install" WorkingDirectory="web" />
-        <Exec Command="npm run build" WorkingDirectory="web" />
+        <Exec Command="npm install" WorkingDirectory="web"/>
+        <Exec Command="npm run build" WorkingDirectory="web"/>
     </Target>
 
     <Target Name="CopyWebDir" AfterTargets="InstallAndRunNpm">
         <ItemGroup>
-            <_CopyWebStuffs Include="web/public/**/*.*" Exclude="web/public/tiles/**/*;web/public/data/**" />
+            <_CopyWebStuffs Include="web/public/**/*.*" Exclude="web/public/tiles/**/*;web/public/data/**"/>
         </ItemGroup>
-        <Copy SourceFiles="@(_CopyWebStuffs)" DestinationFolder="$(TargetDir)/assets/livemap/config/%(RecursiveDir)" SkipUnchangedFiles="true" OverwriteReadOnlyFiles="true" Retries="3" RetryDelayMilliseconds="300" />
+        <Copy SourceFiles="@(_CopyWebStuffs)" DestinationFolder="$(TargetDir)/assets/livemap/config/%(RecursiveDir)" SkipUnchangedFiles="true" OverwriteReadOnlyFiles="true" Retries="3" RetryDelayMilliseconds="300"/>
     </Target>
 
-    <Target Name="FilterModInfo" AfterTargets="CopyWebDir">
-        <PropertyGroup>
-            <ModInfoJson>$(TargetDir)/modinfo.json</ModInfoJson>
-        </PropertyGroup>
-        <WriteLinesToFile Lines="$([System.IO.File]::ReadAllText($(ModInfoJson))
-            .Replace('{version}','$(Version)')
-            .Replace('{description}','$(Description)')
-            )" File="$(ModInfoJson)" Overwrite="true" Encoding="UTF-8"
-        />
-    </Target>
-
-    <Target Name="FilterIndexHtml" AfterTargets="FilterModInfo">
-        <PropertyGroup>
-            <IndexHTML>$(TargetDir)/assets/livemap/config/index.html</IndexHTML>
-        </PropertyGroup>
-        <WriteLinesToFile Lines="$([System.IO.File]::ReadAllText($(IndexHTML))
-            .Replace('{description}','$(Description)')
-            )" File="$(IndexHTML)" Overwrite="true" Encoding="UTF-8"
-        />
-    </Target>
-
-    <Target Name="Package" AfterTargets="FilterIndexHtml">
-        <ZipDirectory DestinationFile="bin/$(TargetName).zip" SourceDirectory="$(TargetDir)" Overwrite="true" />
+    <Target Name="Package" AfterTargets="CopyWebDir">
+        <ZipDirectory DestinationFile="bin/$(TargetName).zip" SourceDirectory="$(TargetDir)" Overwrite="true"/>
     </Target>
 
 </Project>
