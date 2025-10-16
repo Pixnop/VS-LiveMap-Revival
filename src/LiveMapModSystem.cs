@@ -9,7 +9,14 @@ using Vintagestory.API.Server;
 namespace livemap;
 
 public sealed class LiveMapModSystem : ModSystem, IDisposable {
+    private static LiveMapModSystem _instance = null!;
+    public static ILogger Logger => _instance.Mod.Logger;
+
     private LiveMap? _livemap;
+
+    public LiveMapModSystem() {
+        _instance = this;
+    }
 
     public override void StartClientSide(ICoreClientAPI api) {
         _livemap = new LiveMapClient(this, api);
