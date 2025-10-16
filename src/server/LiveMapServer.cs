@@ -11,18 +11,20 @@ public sealed class LiveMapServer : LiveMap {
 
     public Config Config { get; private set; } = null!;
 
-    private Colormap Colormap { get; } = new();
+    public Colormap Colormap { get; }
 
     public LiveMapServer(LiveMapModSystem mod, ICoreServerAPI api) : base(mod, api) {
         Api = api;
 
         ReloadConfig();
 
+        Colormap = new Colormap(this);
+
         Api.Event.RegisterCallback(_ => RunOnFirstTick(), 1);
     }
 
     private void RunOnFirstTick() {
-        Colormap.LoadFromDisk();
+        Colormap.LoadFromDisk(Files.ColormapFile);
     }
 
     public void ReloadConfig() {
