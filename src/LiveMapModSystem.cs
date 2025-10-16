@@ -1,5 +1,4 @@
-﻿using JetBrains.Annotations;
-using livemap.client;
+﻿using livemap.client;
 using livemap.common;
 using livemap.server;
 using Vintagestory.API.Client;
@@ -13,6 +12,8 @@ public sealed class LiveMapModSystem : ModSystem, IDisposable {
     public static ILogger Logger => _instance.Mod.Logger;
 
     private LiveMap? _livemap;
+
+    public string ModId => Mod.Info.ModID;
 
     public LiveMapModSystem() {
         _instance = this;

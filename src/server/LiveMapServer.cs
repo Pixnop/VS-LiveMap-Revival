@@ -1,5 +1,6 @@
 ﻿using livemap.common;
 using livemap.common.configuration;
+using livemap.common.data;
 using livemap.common.util;
 using Vintagestory.API.Server;
 
@@ -10,10 +11,18 @@ public sealed class LiveMapServer : LiveMap {
 
     public Config Config { get; private set; } = null!;
 
+    private Colormap Colormap { get; } = new();
+
     public LiveMapServer(LiveMapModSystem mod, ICoreServerAPI api) : base(mod, api) {
         Api = api;
 
         ReloadConfig();
+
+        Api.Event.RegisterCallback(_ => RunOnFirstTick(), 1);
+    }
+
+    private void RunOnFirstTick() {
+        Colormap.LoadFromDisk();
     }
 
     public void ReloadConfig() {
@@ -28,5 +37,6 @@ public sealed class LiveMapServer : LiveMap {
     }
 
     public override void Dispose() {
+        Colormap.Dispose();
     }
 }
