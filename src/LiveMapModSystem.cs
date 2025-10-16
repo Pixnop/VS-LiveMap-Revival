@@ -8,15 +8,20 @@ using Vintagestory.API.Server;
 namespace livemap;
 
 public sealed class LiveMapModSystem : ModSystem, IDisposable {
-    private static LiveMapModSystem _instance = null!;
-    public static ILogger Logger => _instance.Mod.Logger;
+    private static LiveMapModSystem? _instance;
+    public static ILogger? Logger => _instance?._api?.Logger;
 
+    private ICoreAPI? _api;
     private LiveMap? _livemap;
 
     public string ModId => Mod.Info.ModID;
 
     public LiveMapModSystem() {
         _instance = this;
+    }
+
+    public override void StartPre(ICoreAPI api) {
+        _api = api;
     }
 
     public override void StartClientSide(ICoreClientAPI api) {
