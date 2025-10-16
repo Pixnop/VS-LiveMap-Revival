@@ -8,7 +8,6 @@ using Vintagestory.API.Server;
 
 namespace livemap;
 
-[UsedImplicitly]
 public sealed class LiveMapModSystem : ModSystem, IDisposable {
     private LiveMap? _livemap;
 
