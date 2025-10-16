@@ -6,8 +6,5 @@
 /obj/
 /publish/
 */node_modules/
-/web/public/livemap.js*
-/web/public/livemap.css*
-/web/public/data/
-/web/public/tiles/
+/web/dist
 *DotSettings*
