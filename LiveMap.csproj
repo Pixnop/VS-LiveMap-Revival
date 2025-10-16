@@ -2,6 +2,8 @@
 
     <PropertyGroup>
         <TargetFramework>net8.0</TargetFramework>
+        <Version>0.1.0</Version>
+        <Description>LiveMap is a browser-based world map viewer for Vintage Story</Description>
         <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
         <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
         <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
@@ -28,13 +30,34 @@
 
     <Target Name="CopyWebDir" AfterTargets="InstallAndRunNpm">
         <ItemGroup>
-            <_CopyWebStuffs Include="web/public/**/*.*" Exclude="web/public/tiles/**/*;web/public/data/**"/>
+            <_CopyWebStuffs Include="web/dist/**/*.*" Exclude="web/dist/tiles/**/*;web/dist/data/**"/>
         </ItemGroup>
         <Copy SourceFiles="@(_CopyWebStuffs)" DestinationFolder="$(TargetDir)/assets/livemap/config/%(RecursiveDir)" SkipUnchangedFiles="true" OverwriteReadOnlyFiles="true" Retries="3" RetryDelayMilliseconds="300"/>
     </Target>
 
-    <Target Name="Package" AfterTargets="CopyWebDir">
-        <ZipDirectory DestinationFile="bin/$(TargetName).zip" SourceDirectory="$(TargetDir)" Overwrite="true"/>
+    <Target Name="FilterModInfo" AfterTargets="CopyWebDir">
+        <PropertyGroup>
+            <ModInfoJson>$(TargetDir)/modinfo.json</ModInfoJson>
+        </PropertyGroup>
+        <WriteLinesToFile Lines="$([System.IO.File]::ReadAllText($(ModInfoJson))
+            .Replace('{version}','$(Version)')
+            .Replace('{description}','$(Description)')
+            )" File="$(ModInfoJson)" Overwrite="true" Encoding="UTF-8"
+        />
+    </Target>
+
+    <Target Name="FilterIndexHtml" AfterTargets="FilterModInfo">
+        <PropertyGroup>
+            <IndexHTML>$(TargetDir)/assets/livemap/config/index.html</IndexHTML>
+        </PropertyGroup>
+        <WriteLinesToFile Lines="$([System.IO.File]::ReadAllText($(IndexHTML))
+            .Replace('{description}','$(Description)')
+            )" File="$(IndexHTML)" Overwrite="true" Encoding="UTF-8"
+        />
+    </Target>
+
+    <Target Name="Package" AfterTargets="FilterIndexHtml">
+        <ZipDirectory DestinationFile="bin/$(TargetName)-$(Version).zip" SourceDirectory="$(TargetDir)" Overwrite="true"/>
     </Target>
 
 </Project>
