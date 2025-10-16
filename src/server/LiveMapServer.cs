@@ -1,24 +1,32 @@
 ﻿using livemap.common;
 using livemap.common.configuration;
+using livemap.common.util;
 using Vintagestory.API.Server;
 
 namespace livemap.server;
 
-public sealed class LiveMapServer(LiveMapModSystem mod, ICoreServerAPI api) : LiveMap(mod) {
-    private readonly ICoreServerAPI _api = api;
+public sealed class LiveMapServer : LiveMap {
+    public override ICoreServerAPI Api { get; }
 
-    private Config? _config;
+    public Config Config { get; private set; } = null!;
 
-    public Config Config => _config ?? ReloadConfig();
+    public LiveMapServer(LiveMapModSystem mod, ICoreServerAPI api) : base(mod, api) {
+        Api = api;
 
-    public Config ReloadConfig() {
+        ReloadConfig();
+    }
+
+    public void ReloadConfig() {
         Logger.Event("Loading config from disk...");
-        _config = _api.LoadModConfig<Config>(Config.FileName) ?? new Config();
-        _api.StoreModConfig(_config, Config.FileName);
-        return _config;
+        Config = Api.LoadModConfig<Config>(Config.FileName) ?? new Config();
+        SaveConfig();
+    }
+
+    public void SaveConfig() {
+        Logger.Event("Saving config to disk...");
+        Api.StoreModConfig(Config, Config.FileName);
     }
 
     public override void Dispose() {
-        _config = null;
     }
 }
