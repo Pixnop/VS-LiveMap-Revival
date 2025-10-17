@@ -3,5 +3,5 @@ using ProtoBuf;
 namespace livemap.common.network.packet;
 
 [ProtoContract]
-public class ColormapPacket : Packet {
+public class AdminDialogPacket : Packet {
 }

@@ -45,7 +45,7 @@ public sealed class Colormap(LiveMapServer livemap) : IDisposable {
             }
 
             Logger.Warning("Colormap could not be loaded from disk");
-            Logger.Warning("An admin needs to send the colormap from their client.");
+            Logger.Warning("An admin needs to send the colormap from their client");
         }).Start();
     }
 
