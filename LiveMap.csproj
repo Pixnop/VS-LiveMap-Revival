@@ -18,44 +18,35 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Reference Include="$(VINTAGE_STORY)/**/*.dll" Private="false"/>
-        <None Include="LICENSE;README.md;resources/**" CopyToOutputDirectory="PreserveNewest" Pack="true" PackagePath="" Link="%(RecursiveDir)%(Filename)%(Extension)"/>
+        <Reference Include="$(VINTAGE_STORY)/**/*.dll" Exclude="$(VINTAGE_STORY)/**/CairoSharp.dll" Private="false"/>
+        <None Include="LICENSE;README.md;resources/**" Link="%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" Pack="true" PackagePath=""/>
     </ItemGroup>
+
+    <Target Name="ExtraClean" AfterTargets="Clean">
+        <RemoveDir Directories="bin/$(Configuration)"/>
+        <RemoveDir Directories="web/dist"/>
+    </Target>
 
     <Target Name="InstallAndRunNpm" AfterTargets="PostBuildEvent">
         <Exec Command="npm install" WorkingDirectory="web"/>
         <Exec Command="npm run build" WorkingDirectory="web"/>
     </Target>
 
-    <Target Name="CopyWebDir" AfterTargets="InstallAndRunNpm">
+    <Target Name="ProcessResources" AfterTargets="InstallAndRunNpm">
         <ItemGroup>
-            <_CopyWebStuffs Include="web/dist/**/*.*" Exclude="web/dist/tiles/**/*;web/dist/data/**"/>
+            <CopyWebDist Include="web/dist/**" Exclude="web/dist/tiles/**;web/public/data/**"/>
+            <FilterVars Include="$(TargetDir)/modinfo.json"/>
+            <FilterVars Include="$(TargetDir)/assets/livemap/config/index.html"/>
         </ItemGroup>
-        <Copy SourceFiles="@(_CopyWebStuffs)" DestinationFolder="$(TargetDir)/assets/livemap/config/%(RecursiveDir)" SkipUnchangedFiles="true" OverwriteReadOnlyFiles="true" Retries="3" RetryDelayMilliseconds="300"/>
-    </Target>
-
-    <Target Name="FilterModInfo" AfterTargets="CopyWebDir">
-        <PropertyGroup>
-            <ModInfoJson>$(TargetDir)/modinfo.json</ModInfoJson>
-        </PropertyGroup>
-        <WriteLinesToFile Lines="$([System.IO.File]::ReadAllText($(ModInfoJson))
+        <Copy SourceFiles="@(CopyWebDist)" DestinationFolder="$(TargetDir)/assets/livemap/config/%(RecursiveDir)"/>
+        <WriteLinesToFile Lines="$([System.IO.File]::ReadAllText(%(FilterVars.Identity))
             .Replace('{version}','$(Version)')
             .Replace('{description}','$(Description)')
-            )" File="$(ModInfoJson)" Overwrite="true" Encoding="UTF-8"
+            )" File="%(FilterVars.Identity)" Overwrite="true" Encoding="UTF-8"
         />
     </Target>
 
-    <Target Name="FilterIndexHtml" AfterTargets="FilterModInfo">
-        <PropertyGroup>
-            <IndexHTML>$(TargetDir)/assets/livemap/config/index.html</IndexHTML>
-        </PropertyGroup>
-        <WriteLinesToFile Lines="$([System.IO.File]::ReadAllText($(IndexHTML))
-            .Replace('{description}','$(Description)')
-            )" File="$(IndexHTML)" Overwrite="true" Encoding="UTF-8"
-        />
-    </Target>
-
-    <Target Name="Package" AfterTargets="FilterIndexHtml">
+    <Target Name="Package" AfterTargets="ProcessResources">
         <ZipDirectory DestinationFile="bin/$(TargetName)-$(Version).zip" SourceDirectory="$(TargetDir)" Overwrite="true"/>
     </Target>
 
