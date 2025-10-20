@@ -6,19 +6,19 @@
     "server": "webpack-dev-server"
   },
   "devDependencies": {
-    "leaflet": "^1.9.4",
     "@types/leaflet": "^1.9.21",
+    "copy-webpack-plugin": "^13.0.1",
+    "css-loader": "^7.1.2",
+    "css-minimizer-webpack-plugin": "^7.0.2",
+    "leaflet": "^1.9.4",
+    "leaflet.markercluster": "^1.5.3",
+    "mini-css-extract-plugin": "^2.9.4",
+    "svg-sprite-loader": "^6.0.11",
+    "terser-webpack-plugin": "^5.3.14",
     "ts-loader": "^9.5.4",
     "typescript": "^5.9.3",
-    "css-minimizer-webpack-plugin": "^7.0.2",
-    "mini-css-extract-plugin": "^2.9.4",
-    "css-loader": "^7.1.2",
-    "svg-sprite-loader": "^6.0.11",
-    "copy-webpack-plugin": "^13.0.1",
-    "terser-webpack-plugin": "^5.3.14",
     "webpack": "^5.102.1",
     "webpack-cli": "^6.0.1",
-    "webpack-dev-server": "^5.2.2",
-    "leaflet.markercluster": "^1.5.3"
+    "webpack-dev-server": "^5.2.2"
   }
 }
