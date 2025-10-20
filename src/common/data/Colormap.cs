@@ -14,6 +14,8 @@ public sealed class Colormap(LiveMapServer livemap) : IDisposable {
     private readonly Dictionary<string, uint[]> _colorsByName = [];
     private readonly Dictionary<int, uint[]> _colorsById = [];
 
+    public int Size => _colorsById.Count;
+
     /// <summary>
     /// Add a color to the colormap. This should only be called by the client when building the colormap.
     /// </summary>

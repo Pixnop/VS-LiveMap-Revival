@@ -19,11 +19,11 @@ public class ServerCommandHandler : CommandHandler {
     }
 
     private TextCommandResult LivemapCommand(TextCommandCallingArgs args) {
-        if (args.Caller.Player == null) {
+        if (args.Caller.Player is not IServerPlayer player) {
             return TextCommandResult.Error("Player only command");
         }
 
-        _livemap.NetworkHandler.SendPacket(new AdminDialogPacket(), args.Caller.Player as IServerPlayer);
+        _livemap.NetworkHandler.SendAdminPacket(player);
 
         return TextCommandResult.Success("Opening LiveMap admin dialog");
     }

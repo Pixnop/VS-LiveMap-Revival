@@ -21,12 +21,7 @@ public sealed class ClientNetworkHandler : NetworkHandler {
     private void ReceivedAdminDialogPacket(AdminDialogPacket packet) {
         Logger.Event("Received admin dialog request from server");
 
-        if (!_livemap.Api.World.Player.HasPrivilege(Privilege.root)) {
-            Logger.Event("No privilege to use this mod");
-            return;
-        }
-
-        _livemap.OpenAdminDialog();
+        _livemap.OpenAdminDialog(packet);
     }
 
     private void ReceivedColormapPacket(ColormapPacket packet) {

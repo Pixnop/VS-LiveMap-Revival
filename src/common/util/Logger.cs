@@ -3,7 +3,7 @@ using Vintagestory.API.Common;
 namespace livemap.common.util;
 
 public abstract class Logger {
-    private static ILogger Log() {
+    public static ILogger Log() {
         return LiveMapModSystem.Logger!;
     }
 

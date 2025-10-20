@@ -17,15 +17,30 @@ public sealed class ServerNetworkHandler : NetworkHandler {
             .SetMessageHandler<ColormapPacket>(ReceivedColormapPacket);
     }
 
-    private void ReceivedAdminDialogPacket(IServerPlayer fromPlayer, AdminDialogPacket packet) {
-        throw new NotImplementedException();
+    private void ReceivedAdminDialogPacket(IServerPlayer sender, AdminDialogPacket packet) {
+        Logger.Event($"Received admin dialog request from {sender.PlayerName}");
+
+        SendAdminPacket(sender);
     }
 
-    private void ReceivedColormapPacket(IServerPlayer fromPlayer, ColormapPacket packet) {
-        Logger.Event("Received colormap request from server");
+    private void ReceivedColormapPacket(IServerPlayer sender, ColormapPacket packet) {
+        Logger.Event($"Received colormap request from {sender.PlayerName}");
 
         // todo - respond to server's colormap request
         throw new NotImplementedException();
+    }
+
+    public void SendAdminPacket(IServerPlayer player) {
+        if (!player.HasPrivilege(Privilege.root)) {
+            return;
+        }
+
+        AdminDialogPacket packet = new() {
+            Config = _livemap.Config,
+            ColormapSize = _livemap.Colormap.Size
+        };
+
+        SendPacket(packet, player);
     }
 
     public void SendPacket<T>(T packet, IServerPlayer? recipient = null) where T : Packet {
