@@ -3,6 +3,7 @@ using livemap.client.gui;
 using livemap.client.network;
 using livemap.common;
 using livemap.common.network.packet;
+using livemap.common.util;
 using Vintagestory.API.Client;
 using Vintagestory.API.Server;
 
@@ -23,6 +24,9 @@ public sealed class LiveMapClient : LiveMap {
 
         CommandHandler = new ClientCommandHandler(this);
         NetworkHandler = new ClientNetworkHandler(this);
+
+        Api.Input.RegisterHotKey("livemap-admin-dialog", Lang.Get("keybind-description"), GlKeys.L, HotkeyType.GUIOrOtherControls, ctrlPressed: true);
+        Api.Input.SetHotKeyHandler("livemap-admin-dialog", _ => OpenAdminDialog());
     }
 
     public bool OpenAdminDialog(AdminDialogPacket? packet = null) {

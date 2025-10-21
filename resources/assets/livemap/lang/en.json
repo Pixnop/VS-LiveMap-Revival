@@ -1,3 +1,7 @@
 ﻿{
-  "livemap.title": "LiveMap"
+  "admin-dialog-title": "LiveMap - Admin Dialog",
+  "keybind-description": "Hold to show the player list",
+  "button-colormap": "Colormap",
+  "button-close": "Close",
+  "loading": "Loading..."
 }
