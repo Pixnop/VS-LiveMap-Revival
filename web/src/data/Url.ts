@@ -1,5 +1,5 @@
-import {LiveMap} from '../LiveMap';
-import {Point} from './Point';
+import { LiveMap } from '../LiveMap';
+import { Point } from './Point';
 
 export class Url {
     private readonly _livemap: LiveMap;
@@ -31,7 +31,8 @@ export class Url {
             }
         }
 
-        this._renderer = renderer ?? this._livemap.settings.renderers[0].id;
+        const defaultRenderer = this._livemap.settings.renderers?.[0]?.id ?? 'basic';
+        this._renderer = renderer ?? defaultRenderer;
         this._zoom = +(zoom ?? this._livemap.settings.zoom.def);
         this._point = Point.of(x ?? 0, z ?? 0);
     }

@@ -58,12 +58,12 @@ export class Point {
 
     public static pixelsToMeters(num: number): number {
         // todo - there's got to be a way to handle this in the CRS
-        return num * window.livemap.scale;
+        return num * (window.livemap?.scale ?? 1);
     }
 
     public static metersToPixels(num: number): number {
         // todo - there's got to be a way to handle this in the CRS
-        return num / window.livemap.scale;
+        return num / (window.livemap?.scale ?? 1);
     }
 
     private _x: number;

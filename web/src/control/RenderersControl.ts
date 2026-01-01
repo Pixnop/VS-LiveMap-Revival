@@ -1,5 +1,5 @@
-import {LiveMap} from '../LiveMap';
-import {Renderer} from '../data/Renderer';
+import { LiveMap } from '../LiveMap';
+import { Renderer } from '../data/Renderer';
 import * as L from 'leaflet';
 
 export class RenderersControl {
@@ -29,6 +29,10 @@ export class RenderersControl {
     }
 
     set rendererType(renderer: string | null) {
-        this._rendererType = !renderer?.length ? this._renderers[0].id : renderer;
+        if (!renderer?.length || renderer === 'unknown') {
+            this._rendererType = this._renderers[0]?.id ?? 'basic';
+        } else {
+            this._rendererType = renderer;
+        }
     }
 }

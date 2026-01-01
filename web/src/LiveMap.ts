@@ -1,16 +1,16 @@
 import * as L from 'leaflet';
-import {TileLayerControl} from './control/TileLayerControl';
-import {LayersControl} from './control/LayersControl';
-import {LinkControl} from './control/LinkControl';
-import {CoordsControl} from './control/CoordsControl';
-import {SidebarControl} from './control/SidebarControl';
-import {ContextMenu} from './layer/menu/ContextMenu';
-import {Notifications} from './layer/Notifications';
-import {Settings} from './data/Settings';
-import {Point} from './data/Point';
+import { TileLayerControl } from './control/TileLayerControl';
+import { LayersControl } from './control/LayersControl';
+import { LinkControl } from './control/LinkControl';
+import { CoordsControl } from './control/CoordsControl';
+import { SidebarControl } from './control/SidebarControl';
+import { ContextMenu } from './layer/menu/ContextMenu';
+import { Notifications } from './layer/Notifications';
+import { Settings } from './data/Settings';
+import { Point } from './data/Point';
 import './scss/styles';
 import './svg'
-import {PlayersLayer} from './layer/PlayersLayer';
+import { PlayersLayer } from './layer/PlayersLayer';
 
 export class LiveMap extends L.Map {
     declare _controlCorners: { [x: string]: HTMLDivElement; };
@@ -58,8 +58,8 @@ export class LiveMap extends L.Map {
             //
             // todo remove this logic when this bug gets fixed: https://issues.chromium.org/issues/40887377
             // it seems intentional, so it might not get fixed https://issues.chromium.org/issues/40804672
-            wheelPxPerZoomLevel: L.Browser.linux && L.Browser.chrome ? 120 : 60
         });
+        window.livemap = this;
 
         this._settings = settings;
 
@@ -98,7 +98,7 @@ export class LiveMap extends L.Map {
             if (e.target === container) {
                 document.querySelector('.logo')?.remove();
             }
-        }, {passive: true});
+        }, { passive: true });
 
         // fix map size on load - fixes android browser url bar pushing page off-screen
         // https://chanind.github.io/javascript/2019/09/28/avoid-100vh-on-mobile-web.html
@@ -224,7 +224,7 @@ export class LiveMap extends L.Map {
 window.onload = (): void => {
     window.fetchJson<Settings>('data/settings.json')
         .then((json: Settings): void => {
-            window.livemap = new LiveMap(new Settings(json));
+            new LiveMap(new Settings(json));
         })
         .catch((err: unknown): void => {
             console.error(`Error creating map\n`, err);
@@ -235,7 +235,7 @@ window.onload = (): void => {
 'orientationchange resize'.split(' ').forEach((event: string): void => {
     window.addEventListener(event, (): void => {
         window.livemap?.updateSizeToWindow();
-    }, {passive: true});
+    }, { passive: true });
 });
 
 window.fetchJson = async <T>(url: string): Promise<T> => {

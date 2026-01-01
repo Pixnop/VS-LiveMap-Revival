@@ -1,9 +1,9 @@
-import {Point} from './Point';
-import {Web} from './Web';
-import {Zoom} from './Zoom';
-import {Renderer} from './Renderer';
-import {Ui} from './Ui';
-import {Lang} from './Lang';
+import { Point } from './Point';
+import { Web } from './Web';
+import { Zoom } from './Zoom';
+import { Renderer } from './Renderer';
+import { Ui } from './Ui';
+import { Lang } from './Lang';
 
 export class Settings {
     private readonly _friendlyUrls: boolean;
@@ -29,7 +29,7 @@ export class Settings {
         this._spawn = json.spawn ? Point.of(json.spawn) : this.size.divide(2);
         this._web = json.web ? new Web(json.web) : new Web();
         this._zoom = json.zoom ? new Zoom(json.zoom) : new Zoom();
-        this._renderers = json.renderers ?? [];
+        this._renderers = (json.renderers ?? []).map((renderer: any) => new Renderer(renderer));
         this._ui = json.ui ? new Ui(json.ui) : new Ui();
         this._lang = new Lang(json.lang);
     }

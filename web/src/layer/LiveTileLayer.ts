@@ -1,5 +1,5 @@
 import * as L from 'leaflet';
-import {LiveMap} from '../LiveMap';
+import { LiveMap } from '../LiveMap';
 
 export class LiveTileLayer extends L.TileLayer {
     declare _url: string;
@@ -48,7 +48,7 @@ export class LiveTileLayer extends L.TileLayer {
 
     getTileUrl(coords: L.Coords): string {
         const data: { renderer: string; ext: string; x: number; z: number; zoom: number } = {
-            renderer: this._livemap.sidebarControl.renderersControl.rendererType,
+            renderer: this._livemap.sidebarControl?.renderersControl?.rendererType ?? 'basic',
             ext: this._livemap.settings.web.tiletype,
             x: coords.x,
             z: coords.y,
