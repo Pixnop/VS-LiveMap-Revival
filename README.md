@@ -40,7 +40,7 @@ There is an extensive API that allows you to automate adding/updating your own l
 
 Documentation is automatically generated and hosted on GitHub Pages. You can find it at:
 
-[https://mja00.github.io/VS-LiveMap-Revival/](https://mja00.github.io/VS-LiveMap-Revival/)
+[https://mja00.dev/VS-LiveMap-Revival/](https://mja00.dev/VS-LiveMap-Revival/)
 
 To build the documentation locally, ensure you have [Doxygen](https://www.doxygen.nl/download.html) installed and run:
 
