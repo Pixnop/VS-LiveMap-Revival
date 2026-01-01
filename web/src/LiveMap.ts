@@ -5,6 +5,7 @@ import { LayersControl } from './control/LayersControl';
 import { LinkControl } from './control/LinkControl';
 import { SidebarControl } from './control/SidebarControl';
 import { TileLayerControl } from './control/TileLayerControl';
+import { ViewToggleControl } from './control/ViewToggleControl';
 import { Settings } from './data/Settings';
 import { ContextMenu } from './layer/menu/ContextMenu';
 import { Notifications } from './layer/Notifications';
@@ -30,6 +31,7 @@ export class LiveMap extends L.Map {
 
 	private readonly _contextMenu: ContextMenu;
 	private readonly _notifications: Notifications;
+	private readonly _viewToggleControl?: ViewToggleControl;
 
 	private readonly _scale: number;
 
@@ -84,6 +86,11 @@ export class LiveMap extends L.Map {
 		// the fancy context menu and stuff
 		this._contextMenu = new ContextMenu(this);
 		this._notifications = new Notifications();
+
+		// 3D view toggle (only if enabled in settings)
+		if (settings.web.enable3d) {
+			this._viewToggleControl = new ViewToggleControl(this);
+		}
 
 		// replace leaflet's attribution with our own
 		this.attributionControl.setPrefix(settings.ui.attribution);
@@ -178,6 +185,10 @@ export class LiveMap extends L.Map {
 
 	get notifications(): Notifications {
 		return this._notifications;
+	}
+
+	get viewToggleControl(): ViewToggleControl | undefined {
+		return this._viewToggleControl;
 	}
 
 	get scale(): number {
