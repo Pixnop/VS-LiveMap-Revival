@@ -16,7 +16,17 @@ LiveMap is a Google Maps-like map for Vintage Story that can be viewed in a brow
 
 ## Features
 
-*  *todo*
+* **Integrated Web Server**: Out-of-the-box web hosting for the map, with no external dependencies required.
+* **Real-time Updates**: The map updates automatically as players explore and modify the world.
+* **Built-in Layers**:
+    * **Players**: Track the location and health of online players.
+    * **Traders**: Automatically mark discovered traders on the map.
+    * **Translocators**: Keep track of discovered translocators for easy navigation.
+    * **Spawn**: Highlights the world's default spawn point.
+* **Rendering Styles**: Choose between multiple map styles, including **Basic** and **Sepia**.
+* **High Performance**: Asynchronous rendering and task management ensure minimal impact on server performance.
+* **Extensive API**: Easy for other mod developers to add custom layers, markers, and more.
+* **Customizable UI**: Fully configurable logo, title, and attribution settings.
 
 ## Downloads and Releases
 
