@@ -28,7 +28,7 @@ All releases can be downloaded from the VintageStory ModDB site at:
 
 A live demo of LiveMap can be accessed at:
 
-- TODO
+- https://vslivemap.mart.fyi/
 
 ![Screenshot of markers on map](https://raw.githubusercontent.com/mja00/VS-LiveMap-Revival/master/.github/images/og5.webp)
 
@@ -36,9 +36,9 @@ A live demo of LiveMap can be accessed at:
 
 There is an extensive API that allows you to automate adding/updating your own layers and markers on the map.
 
-https://billygalbreath.github.io/VS-LiveMap
+TODO: Need to rebuild the docs
 
-More information about the API can be found on the [wiki](https://github.com/mja00/VS-LiveMap-Revival/wiki).
+~~More information about the API can be found on the [wiki](https://github.com/mja00/VS-LiveMap-Revival/wiki).~~
 
 ## Building from Source
 
