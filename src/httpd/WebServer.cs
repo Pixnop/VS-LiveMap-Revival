@@ -50,34 +50,68 @@ public partial class WebServer(LiveMap server)
                 Logger.Info($"Internal webserver starting on port {port}");
             }
 
-            try
-            {
-                (_listener = new HttpListener { Prefixes = { $"http://*:{port}/" } }).Start();
-            }
-            catch (Exception)
-            {
-                Logger.Warn($"Internal webserver failed to bind to all interfaces on port {port}. Falling back to localhost.");
-                Logger.Warn("If you want to access the map from other devices, please check the wiki: https://vs.pl3x.net/livemap-access-denied");
+                string[] prefixes = { $"http://*:{port}/", $"http://+:{port}/", $"http://0.0.0.0:{port}/" };
+                bool bound = false;
 
-                try
+                foreach (var prefix in prefixes)
                 {
-                    (_listener = new HttpListener { Prefixes = { $"http://localhost:{port}/" } }).Start();
-                }
-                catch (Exception e)
-                {
-                    Logger.Error("Internal webserver has failed to start");
-                    if (e is HttpListenerException { ErrorCode: 5 })
+                    try
                     {
-                        Logger.Error("Check LiveMap Wiki for possible fixes: https://vs.pl3x.net/livemap-access-denied");
+                        Logger.Info($"Attempting to bind to {prefix}");
+                        (_listener = new HttpListener { Prefixes = { prefix } }).Start();
+                        bound = true;
+                        
+                        Logger.Info($"Internal webserver successfully started on {prefix}");
+                        if (prefix.Contains("*") || prefix.Contains("+") || prefix.Contains("0.0.0.0"))
+                        {
+                            try 
+                            {
+                                var host = Dns.GetHostEntry(Dns.GetHostName());
+                                foreach (var ip in host.AddressList)
+                                {
+                                    if (ip.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork)
+                                    {
+                                        Logger.Info($"You should be able to access the map at: http://{ip}:{port}/");
+                                    }
+                                }
+                            }
+                            catch 
+                            {
+                                // ignore DNS errors
+                            }
+                        }
+                        break;
                     }
-
-                    Logger.Error(e.ToString());
-                    _running = false;
-                    _stopped = true;
-                    Thread.CurrentThread.Interrupt();
-                    return;
+                    catch (Exception e)
+                    {
+                        Logger.Warn($"Failed to bind to {prefix}: {e.Message}");
+                    }
                 }
-            }
+
+                if (!bound)
+                {
+                    Logger.Warn($"Internal webserver failed to bind to all interfaces on port {port}. Falling back to localhost.");
+                    Logger.Warn("If you want to access the map from other devices, please check the wiki: https://vs.pl3x.net/livemap-access-denied");
+
+                    try
+                    {
+                        (_listener = new HttpListener { Prefixes = { $"http://localhost:{port}/" } }).Start();
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.Error("Internal webserver has failed to start");
+                        if (e is HttpListenerException { ErrorCode: 5 })
+                        {
+                            Logger.Error("Check LiveMap Wiki for possible fixes: https://vs.pl3x.net/livemap-access-denied");
+                        }
+
+                        Logger.Error(e.ToString());
+                        _running = false;
+                        _stopped = true;
+                        Thread.CurrentThread.Interrupt();
+                        return;
+                    }
+                }
 
             while (_running)
             {
