@@ -36,9 +36,19 @@ A live demo of LiveMap can be accessed at:
 
 There is an extensive API that allows you to automate adding/updating your own layers and markers on the map.
 
-TODO: Need to rebuild the docs
+### Documentation
 
-~~More information about the API can be found on the [wiki](https://github.com/mja00/VS-LiveMap-Revival/wiki).~~
+Documentation is automatically generated and hosted on GitHub Pages. You can find it at:
+
+[https://mja00.github.io/VS-LiveMap-Revival/](https://mja00.github.io/VS-LiveMap-Revival/)
+
+To build the documentation locally, ensure you have [Doxygen](https://www.doxygen.nl/download.html) installed and run:
+
+```powershell
+.\build-docs.ps1
+```
+
+The generated documentation will be located in `docs/html`.
 
 ## Building from Source
 
