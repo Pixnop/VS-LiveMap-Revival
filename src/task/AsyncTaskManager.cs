@@ -6,6 +6,7 @@ public class AsyncTaskManager {
     public AsyncTaskManager(LiveMap server) {
         _tasks.Add(new MarkersTask(server));
         _tasks.Add(new SettingsTask(server));
+        _tasks.Add(new Heightmap3DTask(server));
     }
 
     public void Tick() {

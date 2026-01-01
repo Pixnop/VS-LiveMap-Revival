@@ -26,7 +26,8 @@ public sealed class SettingsTask(LiveMap server) : AsyncTask(server) {
         dict.TryAdd("size", _server.Sapi.WorldManager.Size());
         dict.TryAdd("spawn", _server.Sapi.World.DefaultSpawnPosition.ToPoint());
         dict.TryAdd("web", new Dictionary<string, object?> {
-            { "tiletype", _server.Config.Web.TileType.Type }
+            { "tiletype", _server.Config.Web.TileType.Type },
+            { "enable3d", _server.Config.Web.Enable3D }
         });
         dict.TryAdd("zoom", new Dictionary<string, object?> {
             { "def", _server.Config.Zoom.Default },

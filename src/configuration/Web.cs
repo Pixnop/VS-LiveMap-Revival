@@ -17,4 +17,14 @@ public class Web {
     public int TileQuality { get; set; } = 100;
 
     public bool FriendlyUrls { get; set; } = false;
+
+    /// <summary>
+    /// Enable 3D map data generation for Three.js frontend
+    /// </summary>
+    public bool Enable3D { get; set; } = false;
+
+    /// <summary>
+    /// Interval in seconds between 3D data regeneration scans
+    /// </summary>
+    public int Interval3D { get; set; } = 60;
 }
