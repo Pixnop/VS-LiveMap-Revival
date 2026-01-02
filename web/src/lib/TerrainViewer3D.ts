@@ -35,10 +35,10 @@ export class TerrainViewer3D {
 
 	// Region size in blocks
 	private static readonly REGION_SIZE = 512;
-	// Scale factor for height visualization
-	private static readonly HEIGHT_SCALE = 0.5;
-	// Scale factor for XZ plane
-	private static readonly XZ_SCALE = 1;
+	// Block size for voxel rendering (sample every N blocks for performance)
+	private static readonly BLOCK_SAMPLE = 2;
+	// Scale factor for rendering
+	private static readonly BLOCK_SCALE = 1;
 
 	constructor(livemap: LiveMap) {
 		this._livemap = livemap;
@@ -231,66 +231,150 @@ export class TerrainViewer3D {
 	}
 
 	/**
-	 * Create terrain mesh from region data
+	 * Create voxel-style terrain mesh from region data
 	 */
 	private createTerrainMesh(data: Region3DData): THREE.Mesh {
-		const size = TerrainViewer3D.REGION_SIZE;
-		const segments = 128; // Reduce resolution for performance
-		const step = size / segments;
+		const regionSize = TerrainViewer3D.REGION_SIZE;
+		const sample = TerrainViewer3D.BLOCK_SAMPLE;
+		const blockScale = TerrainViewer3D.BLOCK_SCALE;
+		const gridSize = regionSize / sample;
 
-		// Create geometry
-		const geometry = new THREE.PlaneGeometry(
-			size * TerrainViewer3D.XZ_SCALE,
-			size * TerrainViewer3D.XZ_SCALE,
-			segments,
-			segments,
-		);
-
-		// Rotate to be horizontal (XZ plane)
-		geometry.rotateX(-Math.PI / 2);
-
-		// Get position attribute
-		const position = geometry.getAttribute('position');
+		// Arrays for building geometry
+		const positions: number[] = [];
 		const colors: number[] = [];
+		const normals: number[] = [];
 
-		// Calculate base Y (sea level) for height offset
-		const baseY = (data.minY + data.maxY) / 2;
+		// Calculate base Y for height offset
+		const baseY = data.minY;
 
-		// Apply heightmap and colors
-		for (let i = 0; i <= segments; i++) {
-			for (let j = 0; j <= segments; j++) {
-				const vertexIndex = i * (segments + 1) + j;
+		// Helper to get height at a position
+		const getHeight = (x: number, z: number): number => {
+			if (x < 0 || x >= regionSize || z < 0 || z >= regionSize) {
+				return baseY;
+			}
+			const idx = z * regionSize + x;
+			return data.heightmap[idx] ?? baseY;
+		};
 
-				// Sample heightmap at this position
-				const sampleX = Math.floor(j * step);
-				const sampleZ = Math.floor(i * step);
-				const dataIndex = sampleZ * size + sampleX;
+		// Helper to get color at a position (format is ARGB)
+		const getColor = (x: number, z: number): [number, number, number] => {
+			const idx = z * regionSize + x;
+			const packed = data.colors[idx] ?? 0xFF808080;
+			return [
+				((packed >> 16) & 0xFF) / 255, // R
+				((packed >> 8) & 0xFF) / 255,  // G
+				(packed & 0xFF) / 255,          // B
+			];
+		};
 
-				// Get height value
-				const height = data.heightmap[dataIndex] ?? baseY;
-				const y = (height - baseY) * TerrainViewer3D.HEIGHT_SCALE;
+		// Helper to add a face (quad as two triangles)
+		const addFace = (
+			v0: number[], v1: number[], v2: number[], v3: number[],
+			normal: number[],
+			color: [number, number, number],
+		): void => {
+			// Triangle 1: v0, v1, v2
+			positions.push(...v0, ...v1, ...v2);
+			// Triangle 2: v0, v2, v3
+			positions.push(...v0, ...v2, ...v3);
 
-				// Update vertex position
-				position.setY(vertexIndex, y);
+			// Normals for 6 vertices
+			for (let i = 0; i < 6; i++) {
+				normals.push(...normal);
+				colors.push(...color);
+			}
+		};
 
-				// Get color (RGBA packed as uint32)
-				const packedColor = data.colors[dataIndex] ?? 0x808080FF;
-				const r = ((packedColor >> 24) & 0xFF) / 255;
-				const g = ((packedColor >> 16) & 0xFF) / 255;
-				const b = ((packedColor >> 8) & 0xFF) / 255;
+		// Iterate over sampled grid
+		for (let gz = 0; gz < gridSize; gz++) {
+			for (let gx = 0; gx < gridSize; gx++) {
+				const worldX = gx * sample;
+				const worldZ = gz * sample;
 
-				colors.push(r, g, b);
+				// Get height at center of this block
+				const height = getHeight(worldX + sample / 2, worldZ + sample / 2);
+				const y = (height - baseY) * blockScale;
+				const blockHeight = sample * blockScale;
+
+				// Block corners in local space
+				const x0 = gx * sample * blockScale;
+				const x1 = x0 + sample * blockScale;
+				const z0 = gz * sample * blockScale;
+				const z1 = z0 + sample * blockScale;
+				const y0 = 0; // Bottom at base
+				const y1 = y; // Top at height
+
+				// Get color for this block
+				const color = getColor(worldX + sample / 2, worldZ + sample / 2);
+
+				// Top face (always visible)
+				addFace(
+					[x0, y1, z0], [x0, y1, z1], [x1, y1, z1], [x1, y1, z0],
+					[0, 1, 0],
+					color,
+				);
+
+				// Check neighbors for side faces
+				const heightN = getHeight(worldX + sample / 2, worldZ - sample + sample / 2);
+				const heightS = getHeight(worldX + sample / 2, worldZ + sample + sample / 2);
+				const heightW = getHeight(worldX - sample + sample / 2, worldZ + sample / 2);
+				const heightE = getHeight(worldX + sample + sample / 2, worldZ + sample / 2);
+
+				// Shade sides slightly darker
+				const sideColor: [number, number, number] = [color[0] * 0.8, color[1] * 0.8, color[2] * 0.8];
+
+				// North face (z-)
+				if (height > heightN) {
+					const ny = (heightN - baseY) * blockScale;
+					addFace(
+						[x1, y1, z0], [x1, ny, z0], [x0, ny, z0], [x0, y1, z0],
+						[0, 0, -1],
+						sideColor,
+					);
+				}
+
+				// South face (z+)
+				if (height > heightS) {
+					const sy = (heightS - baseY) * blockScale;
+					addFace(
+						[x0, y1, z1], [x0, sy, z1], [x1, sy, z1], [x1, y1, z1],
+						[0, 0, 1],
+						sideColor,
+					);
+				}
+
+				// West face (x-)
+				if (height > heightW) {
+					const wy = (heightW - baseY) * blockScale;
+					addFace(
+						[x0, y1, z0], [x0, wy, z0], [x0, wy, z1], [x0, y1, z1],
+						[-1, 0, 0],
+						sideColor,
+					);
+				}
+
+				// East face (x+)
+				if (height > heightE) {
+					const ey = (heightE - baseY) * blockScale;
+					addFace(
+						[x1, y1, z1], [x1, ey, z1], [x1, ey, z0], [x1, y1, z0],
+						[1, 0, 0],
+						sideColor,
+					);
+				}
 			}
 		}
 
-		// Add vertex colors
+		// Create BufferGeometry
+		const geometry = new THREE.BufferGeometry();
+		geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+		geometry.setAttribute('normal', new THREE.Float32BufferAttribute(normals, 3));
 		geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3));
-		geometry.computeVertexNormals();
 
-		// Create material with vertex colors
+		// Create material
 		const material = new THREE.MeshLambertMaterial({
 			vertexColors: true,
-			side: THREE.DoubleSide,
+			side: THREE.FrontSide,
 		});
 
 		// Create mesh and position it
@@ -298,14 +382,10 @@ export class TerrainViewer3D {
 
 		// Position based on region coordinates relative to spawn
 		const spawn = this._livemap.settings.spawn;
-		const worldX = data.x * size - spawn.x;
-		const worldZ = data.z * size - spawn.z;
+		const worldX = data.x * regionSize - spawn.x;
+		const worldZ = data.z * regionSize - spawn.z;
 
-		mesh.position.set(
-			worldX * TerrainViewer3D.XZ_SCALE + (size * TerrainViewer3D.XZ_SCALE) / 2,
-			0,
-			worldZ * TerrainViewer3D.XZ_SCALE + (size * TerrainViewer3D.XZ_SCALE) / 2,
-		);
+		mesh.position.set(worldX, 0, worldZ);
 
 		return mesh;
 	}
