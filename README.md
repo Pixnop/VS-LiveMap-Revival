@@ -28,6 +28,20 @@ LiveMap is a Google Maps-like map for Vintage Story that can be viewed in a brow
 * **Extensive API**: Easy for other mod developers to add custom layers, markers, and more.
 * **Customizable UI**: Fully configurable logo, title, and attribution settings.
 
+## 🚧 Work in Progress: 3D View
+
+A new **3D terrain viewer** is currently in development! This feature allows you to visualize the map in a voxel-style 3D view using Three.js.
+
+**Current status:**
+- ✅ Backend: 3D heightmap data generation
+- ✅ Frontend: Three.js voxel renderer with colormap
+- ✅ Toggle button to switch between 2D/3D views
+- 🔄 Optimization and polish in progress
+
+To enable (experimental): set `"enable3D": true` in the `web` section of your `livemap.json` config.
+
+![3D View Preview](.github/images/3d-preview.png)
+
 ## Downloads and Releases
 
 All releases can be downloaded from the VintageStory ModDB site at:
